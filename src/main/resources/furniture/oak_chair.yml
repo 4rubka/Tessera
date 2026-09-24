@@ -1,0 +1,13 @@
+oak_chair:
+  item_id: oak_chair
+  display_name: "<gold>Oak Chair</gold>"
+  display_type: ITEM_DISPLAY
+  hitbox:
+    width: 0.8
+    height: 1.0
+  seat: true
+  seat_height: 0.4
+  cardinal_rotation: true
+  sounds:
+    place: BLOCK_WOOD_PLACE
+    break: BLOCK_WOOD_BREAK

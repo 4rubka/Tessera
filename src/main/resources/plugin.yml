@@ -1,0 +1,57 @@
+name: Tessera
+version: '${version}'
+main: com.prisma.tessera.TesseraPlugin
+api-version: '1.21'
+prefix: Tessera
+author: _4rubka_
+description: Advanced custom items, blocks, furniture, GUIs, and resource pack engine
+load: POSTWORLD
+softdepend:
+  - WorldGuard
+  - GriefPrevention
+  - Towny
+  - LuckPerms
+  - Vault
+  - PlaceholderAPI
+commands:
+  tessera:
+    aliases: [t]
+    description: Master command for Tessera custom objects, tools, and diagnostics
+    usage: /<command> [subcommand]
+permissions:
+  tessera.admin:
+    description: Full administrative access to Tessera commands and tools
+    default: op
+  tessera.menu:
+    description: Access to open the interactive custom object catalog
+    default: true
+  tessera.get:
+    description: Permission to give custom items to oneself
+    default: op
+  tessera.give:
+    description: Permission to give custom items to other players
+    default: op
+  tessera.giveall:
+    description: Permission to broadcast custom items to all players
+    default: op
+  tessera.recipe:
+    description: Permission to view interactive crafting recipes
+    default: true
+  tessera.inspect:
+    description: Permission to inspect item DataComponents and PDC
+    default: true
+  tessera.hat:
+    description: Permission to equip custom cosmetic hats
+    default: true
+  tessera.sit:
+    description: Permission to sit on custom furniture and chairs
+    default: true
+  tessera.repair:
+    description: Permission to repair item durability
+    default: op
+  tessera.hud:
+    description: Permission to toggle actionbar and top banner HUD
+    default: true
+  tessera.convert:
+    description: Permission to run legacy plugin migration engine
+    default: op

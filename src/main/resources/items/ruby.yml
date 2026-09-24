@@ -1,0 +1,17 @@
+ruby:
+  material: EMERALD
+  display_name: "<gradient:#ff416c:#ff4b2b><bold>Ruby</bold></gradient>"
+  lore:
+    - "<gray>A precious crimson gemstone"
+    - "<dark_gray>Common Material"
+  custom_model_data: 10001
+  max_stack_size: 64
+
+ruby_sword:
+  material: DIAMOND_SWORD
+  display_name: "<gradient:#ff416c:#ff4b2b><bold>Ruby Sword</bold></gradient>"
+  lore:
+    - "<gray>Forged from crystallized ruby"
+    - "<red>+10 Attack Damage"
+  custom_model_data: 10002
+  unbreakable: true

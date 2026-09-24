@@ -1,0 +1,80 @@
+# ==============================================================================
+# Tessera Language File - Ukrainian (uk)
+# ==============================================================================
+prefix: "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient> <dark_gray>»</dark_gray> "
+
+messages:
+  no_permission: "<red>У вас немає прав для виконання цієї команди!</red>"
+  unknown_command: "<red>Невідома підкоманда. Введіть <yellow>/tessera info</yellow> для довідки.</red>"
+  reload_success: "<green>Усі конфігурації, предмети, блоки, меблі та рецепти успішно перезавантажено!</green>"
+  player_only: "<red>Цю команду може виконувати лише гравець на сервері.</red>"
+  player_not_found: "<red>Гравця не знайдено: <yellow>%target%</yellow></red>"
+  item_not_found: "<red>Кастомний предмет або блок не знайдено: <yellow>%id%</yellow></red>"
+  item_given: "<green>Видано <yellow>%amount%x %id%</yellow> гравцю <aqua>%player%</aqua>.</green>"
+  hud_enabled: "<green>Ваш наекранний HUD увімкнено.</green>"
+  hud_disabled: "<red>Ваш наекранний HUD вимкнено.</red>"
+  cannot_place_here: "<red>Ви не можете ставити кастомні об'єкти у цьому захищеному регіоні!</red>"
+  cannot_break_here: "<red>Ви не можете руйнувати кастомні об'єкти у цьому захищеному регіоні!</red>"
+  furniture_in_use: "<yellow>Це місце вже зайняте іншим гравцем!</yellow>"
+  item_given_all: "<green>Роздано <yellow>%amount%x %id%</yellow> усім гравцям на сервері!</green>"
+  hat_equipped: "<gradient:#00c6ff:#0072ff>✦ Кастомний капелюх успішно вдягнено! ✦</gradient>"
+  repair_success: "<green>Предмет у руці повністю відремонтовано!</green>"
+  top_banner_enabled: "<green>Верхній інформаційний банер увімкнено.</green>"
+  top_banner_disabled: "<red>Верхній інформаційний банер вимкнено.</red>"
+  pack_import_success: "<green>Ресурспак <yellow>%name%</yellow> успішно імпортовано та об'єднано!</green>"
+  pack_import_fail: "<red>Помилка імпорту ресурспака: %error%</red>"
+
+pack:
+  prompt: |
+    <gradient:#00c6ff:#0072ff><bold>✦ ОФІЦІЙНИЙ РЕСУРСПАК СЕРВЕРА TESSERA ✦</bold></gradient>
+    <dark_gray>────────────────────────────────────────────</dark_gray>
+    <gray>❖ Кастомна 3D-зброя, щити, луки та інструменти</gray>
+    <gray>❖ Функціональні меблі та можливість сидіти</gray>
+    <gray>❖ Естетичний темний HUD та покращені звуки</gray>
+    <dark_gray>────────────────────────────────────────────</dark_gray>
+    <yellow>Натисніть [ПРИЙНЯТИ] для відображення всіх моделей!</yellow>
+  loading_title: "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient>"
+  loading_subtitle: "<gray>Завантаження ресурспаку, зачекайте будь ласка...</gray>"
+  loaded_actionbar: "<green>✔ Ресурспак успішно встановлено!</green>"
+  loaded_chat: "<gradient:#00c6ff:#0072ff><b>Tessera</b></gradient> <dark_gray>»</dark_gray> <green>Ресурспак завантажено! Приємної гри з кастомним контентом.</green>"
+  kick_declined: |
+    <gradient:#ff416c:#ff4b2b><bold>Потрібен ресурспак</bold></gradient>
+    
+    <gray>Для гри на нашому сервері обов'язково потрібен ресурспак.</gray>
+    <gray>Щоб увімкнути його: <b>Мережева гра</b> -> <b>Змінити сервер</b> -> <b>Пакети ресурсів: Увімкнено</b>.</gray>
+  kick_failed: |
+    <gradient:#ff416c:#ff4b2b><bold>Помилка завантаження</bold></gradient>
+    
+    <gray>Не вдалося завантажити ресурспак до вашого клієнта.</gray>
+    <gray>Перевірте інтернет-з'єднання та підключіться знову.</gray>
+  declined_warning: "<yellow>⚠ Ви відхилили ресурспак. Кастомні предмети будуть відображатись як ванільні.</yellow>"
+  failed_warning: "<red>⚠ Помилка завантаження ресурспаку. Спробуйте ввести /tessera pack reload.</red>"
+
+welcome:
+  first_join:
+    title: "<gradient:#00c6ff:#0072ff><bold>ЛАСКАВО ПРОСИМО!</bold></gradient>"
+    subtitle: "<gray>Вітаємо на нашому сервері, <yellow>%player%</yellow>!</gray>"
+    actionbar: "<gradient:#f12711:#f5af19>✨ Бажаємо приємної та незабутньої гри! ✨</gradient>"
+    broadcast: "<gradient:#00c6ff:#0072ff><bold>Новий гравець</bold></gradient> <aqua>%player%</aqua> <gray>вперше приєднався до сервера! Привітайте новачка! 👋</gray>"
+    chat:
+      - "<gradient:#00c6ff:#0072ff><bold>==================================================</bold></gradient>"
+      - " <gradient:#00c6ff:#0072ff><bold>TESSERA ENGINE</bold></gradient> <dark_gray>»</dark_gray> <gray>Вітаємо нового гравця <aqua>%player%</aqua> на нашому сервері!</gray>"
+      - " <dark_gray>•</dark_gray> <gray>Тут доступні унікальні кастомні предмети, блоки, меблі та механіки.</gray>"
+      - " <dark_gray>•</dark_gray> <gray>Введіть <click:run_command:'/tessera menu'><hover:show_text:'<green>Натисніть щоб відкрити меню!'><yellow><u>/tessera menu</u></yellow></hover></click> для огляду каталогу предметів!</gray>"
+      - " <dark_gray>•</dark_gray> <gray>Введіть <click:run_command:'/tessera hud'><hover:show_text:'<green>Перемкнути HUD!'><yellow><u>/tessera hud</u></yellow></hover></click> щоб увімкнути екранний статус-бар.</gray>"
+      - " <dark_gray>•</dark_gray> <gray>Ознайомтесь з правилами та насолоджуйтесь грою!</gray>"
+      - "<gradient:#00c6ff:#0072ff><bold>==================================================</bold></gradient>"
+  regular_join:
+    title: "<gradient:#00c6ff:#0072ff><bold>З ПОВЕРНЕННЯМ</bold></gradient>"
+    subtitle: "<gray>Раді знову бачити вас, <aqua>%player%</aqua>!</gray>"
+    actionbar: "<gray>З поверненням на сервер, <yellow>%player%</yellow>!</gray>"
+    broadcast: "<gray>[<green>+</green>] <yellow>%player%</yellow> зайшов у гру.</gray>"
+    chat:
+      - "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient> <dark_gray>»</dark_gray> <gray>З поверненням, <aqua>%player%</aqua>! Відкрити меню: <click:run_command:'/tessera menu'><yellow><u>/tessera menu</u></yellow></click></gray>"
+
+gui:
+  title: "<gradient:#00c6ff:#0072ff><bold>Каталог Tessera</bold></gradient>"
+  category_all: "Всі кастомні об'єкти"
+  category_items: "Предмети"
+  category_blocks: "Кастомні блоки"
+  category_furniture: "Меблі"

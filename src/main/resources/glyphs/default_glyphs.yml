@@ -1,0 +1,60 @@
+tessera_badge:
+  character: "\uE001"
+  texture: tessera:font/tessera_badge.png
+  ascent: 8
+  height: 8
+  width: 8
+
+# Glyph top edge = text y + 7 - ascent. Each banner is sized for where it is drawn.
+
+# Item names in the GUIs (tooltip first line).
+tessera_banner:
+  character: "\uE002"
+  texture: tessera:font/tessera_banner.png
+  ascent: 11
+  height: 16
+  width: 128
+
+# Pause menu title. Written into every language file as the "menu.game" string.
+pause_banner:
+  character: "\uE003"
+  texture: tessera:font/pause_banner.png
+  ascent: 16
+  height: 28
+  width: 224
+
+# Top bossbar banner (hud.top_banner.title).
+top_banner:
+  character: "\uE008"
+  texture: tessera:font/pause_banner.png
+  ascent: 10
+  height: 22
+  width: 176
+
+tessera_status_bar:
+  character: "\uE004"
+  texture: tessera:font/tessera_status_bar.png
+  ascent: 10
+  height: 12
+  width: 90
+
+ruby:
+  character: "\uE005"
+  texture: tessera:font/ruby.png
+  ascent: 8
+  height: 8
+  width: 8
+
+heart:
+  character: "\uE006"
+  texture: tessera:font/heart.png
+  ascent: 8
+  height: 8
+  width: 8
+
+mana:
+  character: "\uE007"
+  texture: tessera:font/mana.png
+  ascent: 8
+  height: 8
+  width: 8

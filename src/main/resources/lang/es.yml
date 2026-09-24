@@ -1,0 +1,47 @@
+# ==============================================================================
+# Tessera Language File - Spanish (es)
+# ==============================================================================
+prefix: "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient> <dark_gray>»</dark_gray> "
+
+messages:
+  no_permission: "<red>No tienes permiso para ejecutar este comando.</red>"
+  unknown_command: "<red>Subcomando desconocido. Usa <yellow>/tessera info</yellow> para ayuda.</red>"
+  reload_success: "<green>¡Todas las configuraciones, objetos, bloques y recetas se han recargado!</green>"
+  player_only: "<red>Este comando solo puede ser ejecutado por un jugador.</red>"
+  player_not_found: "<red>Jugador no encontrado: <yellow>%target%</yellow></red>"
+  item_not_found: "<red>Objeto personalizado no encontrado: <yellow>%id%</yellow></red>"
+  item_given: "<green>Entregado <yellow>%amount%x %id%</yellow> a <aqua>%player%</aqua>.</green>"
+  hud_enabled: "<green>Tu HUD en pantalla ha sido activado.</green>"
+  hud_disabled: "<red>Tu HUD en pantalla ha sido desactivado.</red>"
+  cannot_place_here: "<red>¡No puedes colocar objetos personalizados en esta región protegida!</red>"
+  cannot_break_here: "<red>¡No puedes romper objetos personalizados en esta región protegida!</red>"
+  furniture_in_use: "<yellow>¡Este asiento ya está ocupado!</yellow>"
+
+pack:
+  prompt: |
+    <gradient:#00c6ff:#0072ff><bold>Paquete de Recursos del Servidor</bold></gradient>
+    <gray>Por favor, acepta el paquete de recursos para ver armas 3D,</gray>
+    <gray>muebles interactivos y bloques personalizados.</gray>
+  loading_title: "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient>"
+  loading_subtitle: "<gray>Cargando paquete de recursos, por favor espera...</gray>"
+  loaded_actionbar: "<green>✔ ¡Paquete de recursos cargado con éxito!</green>"
+  loaded_chat: "<gradient:#00c6ff:#0072ff><b>Tessera</b></gradient> <dark_gray>»</dark_gray> <green>¡Paquete de recursos activo! Disfruta del juego.</green>"
+  kick_declined: |
+    <gradient:#ff416c:#ff4b2b><bold>Paquete de Recursos Obligatorio</bold></gradient>
+    
+    <gray>Debes aceptar el paquete de recursos para jugar en este servidor.</gray>
+    <gray>Actívalo en: <b>Multijugador</b> -> <b>Editar Servidor</b> -> <b>Paquetes de Recursos: Sí</b>.</gray>
+  kick_failed: |
+    <gradient:#ff416c:#ff4b2b><bold>Error en la descarga</bold></gradient>
+    
+    <gray>No se pudo descargar el paquete de recursos a tu cliente.</gray>
+    <gray>Verifica tu conexión a internet e inténtalo de nuevo.</gray>
+  declined_warning: "<yellow>⚠ Has rechazado el paquete de recursos.</yellow>"
+  failed_warning: "<red>⚠ Error al descargar el paquete de recursos.</red>"
+
+gui:
+  title: "<gradient:#00c6ff:#0072ff><bold>Catálogo Tessera</bold></gradient>"
+  category_all: "Todos los Objetos"
+  category_items: "Objetos"
+  category_blocks: "Bloques"
+  category_furniture: "Muebles"

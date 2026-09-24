@@ -1,0 +1,80 @@
+# ==============================================================================
+# Tessera Language File - English (en)
+# ==============================================================================
+prefix: "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient> <dark_gray>»</dark_gray> "
+
+messages:
+  no_permission: "<red>You do not have permission to execute this command.</red>"
+  unknown_command: "<red>Unknown subcommand. Use <yellow>/tessera info</yellow> for help.</red>"
+  reload_success: "<green>All Tessera configurations, items, blocks, furniture, and recipes reloaded successfully!</green>"
+  player_only: "<red>This command can only be executed by an in-game player.</red>"
+  player_not_found: "<red>Player not found: <yellow>%target%</yellow></red>"
+  item_not_found: "<red>Custom item or block not found: <yellow>%id%</yellow></red>"
+  item_given: "<green>Gave <yellow>%amount%x %id%</yellow> to <aqua>%player%</aqua>.</green>"
+  hud_enabled: "<green>Your on-screen HUD has been enabled.</green>"
+  hud_disabled: "<red>Your on-screen HUD has been disabled.</red>"
+  cannot_place_here: "<red>You cannot place custom objects in this protected region!</red>"
+  cannot_break_here: "<red>You cannot break custom objects in this protected region!</red>"
+  furniture_in_use: "<yellow>Someone is already sitting here!</yellow>"
+  item_given_all: "<green>Broadcasted <yellow>%amount%x %id%</yellow> to all online players!</green>"
+  hat_equipped: "<gradient:#00c6ff:#0072ff>✦ Successfully equipped your cosmetic hat! ✦</gradient>"
+  repair_success: "<green>Successfully repaired your held item to full durability!</green>"
+  top_banner_enabled: "<green>Top status banner enabled.</green>"
+  top_banner_disabled: "<red>Top status banner disabled.</red>"
+  pack_import_success: "<green>Successfully imported resource pack <yellow>%name%</yellow>!</green>"
+  pack_import_fail: "<red>Failed to import resource pack: %error%</red>"
+
+pack:
+  prompt: |
+    <gradient:#00c6ff:#0072ff><bold>✦ TESSERA OFFICIAL SERVER PACK ✦</bold></gradient>
+    <dark_gray>────────────────────────────────────────────</dark_gray>
+    <gray>❖ Custom 3D Weapons, Shields, Tools & Bows</gray>
+    <gray>❖ Functional Interactive Furniture & Seating</gray>
+    <gray>❖ Aesthetic Dark-Mode HUD & Dynamic Audio</gray>
+    <dark_gray>────────────────────────────────────────────</dark_gray>
+    <yellow>Click [ACCEPT] to enable custom models & textures!</yellow>
+  loading_title: "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient>"
+  loading_subtitle: "<gray>Applying server resource pack, please wait...</gray>"
+  loaded_actionbar: "<green>✔ Resource pack loaded successfully!</green>"
+  loaded_chat: "<gradient:#00c6ff:#0072ff><b>Tessera</b></gradient> <dark_gray>»</dark_gray> <green>Resource pack active! Enjoy the custom content.</green>"
+  kick_declined: |
+    <gradient:#ff416c:#ff4b2b><bold>Resource Pack Required</bold></gradient>
+    
+    <gray>You must accept the server resource pack to play on this server.</gray>
+    <gray>To enable: <b>Multiplayer</b> -> <b>Edit Server</b> -> <b>Server Resource Packs: Enabled</b>.</gray>
+  kick_failed: |
+    <gradient:#ff416c:#ff4b2b><bold>Resource Pack Failed</bold></gradient>
+    
+    <gray>Failed to download the resource pack to your client.</gray>
+    <gray>Please verify your internet connection and reconnect to the server.</gray>
+  declined_warning: "<yellow>⚠ You declined the resource pack. Custom items will display with default textures.</yellow>"
+  failed_warning: "<red>⚠ Failed to download resource pack. You can retry with /tessera pack reload.</red>"
+
+welcome:
+  first_join:
+    title: "<gradient:#00c6ff:#0072ff><bold>WELCOME TO THE SERVER</bold></gradient>"
+    subtitle: "<gray>Welcome, <yellow>%player%</yellow>! Enjoy your adventure.</gray>"
+    actionbar: "<gradient:#f12711:#f5af19>✨ Have fun on your first adventure! ✨</gradient>"
+    broadcast: "<gradient:#00c6ff:#0072ff><bold>Welcome</bold></gradient> <aqua>%player%</aqua> <gray>has joined the server for the first time! Say hello! 👋</gray>"
+    chat:
+      - "<gradient:#00c6ff:#0072ff><bold>==================================================</bold></gradient>"
+      - " <gradient:#00c6ff:#0072ff><bold>TESSERA ENGINE</bold></gradient> <dark_gray>»</dark_gray> <gray>Welcome <aqua>%player%</aqua> to our server!</gray>"
+      - " <dark_gray>•</dark_gray> <gray>We feature custom weapons, functional furniture, and unique blocks.</gray>"
+      - " <dark_gray>•</dark_gray> <gray>Type <click:run_command:'/tessera menu'><hover:show_text:'<green>Click to open catalog!'><yellow><u>/tessera menu</u></yellow></hover></click> to view custom items!</gray>"
+      - " <dark_gray>•</dark_gray> <gray>Type <click:run_command:'/tessera hud'><hover:show_text:'<green>Toggle HUD!'><yellow><u>/tessera hud</u></yellow></hover></click> to toggle your on-screen HUD.</gray>"
+      - " <dark_gray>•</dark_gray> <gray>Be respectful, follow server rules, and enjoy your stay!</gray>"
+      - "<gradient:#00c6ff:#0072ff><bold>==================================================</bold></gradient>"
+  regular_join:
+    title: "<gradient:#00c6ff:#0072ff><bold>WELCOME BACK</bold></gradient>"
+    subtitle: "<gray>Hello, <aqua>%player%</aqua>! Good to see you again.</gray>"
+    actionbar: "<gray>Welcome back, <yellow>%player%</yellow>!</gray>"
+    broadcast: "<gray>[<green>+</green>] <yellow>%player%</yellow> joined the game.</gray>"
+    chat:
+      - "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient> <dark_gray>»</dark_gray> <gray>Welcome back, <aqua>%player%</aqua>! Use <click:run_command:'/tessera menu'><yellow><u>/tessera menu</u></yellow></click> to view catalog.</gray>"
+
+gui:
+  title: "<gradient:#00c6ff:#0072ff><bold>Tessera Catalog</bold></gradient>"
+  category_all: "All Custom Objects"
+  category_items: "Items"
+  category_blocks: "Custom Blocks"
+  category_furniture: "Furniture"

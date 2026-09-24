@@ -1,0 +1,32 @@
+ruby_block_recipe:
+  type: SHAPED
+  result:
+    item: ruby_block
+    amount: 1
+  shape:
+    - "RRR"
+    - "RRR"
+    - "RRR"
+  ingredients:
+    R: tessera:ruby
+
+ruby_sword_recipe:
+  type: SHAPED
+  result:
+    item: ruby_sword
+    amount: 1
+  shape:
+    - " R "
+    - " R "
+    - " S "
+  ingredients:
+    R: tessera:ruby
+    S: STICK
+
+ruby_uncompress_recipe:
+  type: SHAPELESS
+  result:
+    item: ruby
+    amount: 9
+  ingredients:
+    - tessera:ruby_block

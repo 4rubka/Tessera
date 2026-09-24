@@ -1,0 +1,16 @@
+ruby_block:
+  block_material: NOTE_BLOCK
+  display_name: "<gradient:#ff416c:#ff4b2b><bold>Ruby Block</bold></gradient>"
+  hardness: 5.0
+  required_tool: PICKAXE
+  minimum_tier: IRON
+  sounds:
+    place: BLOCK_STONE_PLACE
+    break: BLOCK_STONE_BREAK
+    step: BLOCK_STONE_STEP
+    hit: BLOCK_STONE_HIT
+  drops:
+    - item: ruby
+      min: 9
+      max: 9
+      chance: 1.0

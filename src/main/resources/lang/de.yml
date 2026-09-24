@@ -1,0 +1,47 @@
+# ==============================================================================
+# Tessera Language File - German (de)
+# ==============================================================================
+prefix: "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient> <dark_gray>»</dark_gray> "
+
+messages:
+  no_permission: "<red>Du hast keine Berechtigung für diesen Befehl.</red>"
+  unknown_command: "<red>Unbekannter Unterbefehl. Verwende <yellow>/tessera info</yellow> für Hilfe.</red>"
+  reload_success: "<green>Alle Tessera-Konfigurationen, Gegenstände, Blöcke und Rezepte wurden neu geladen!</green>"
+  player_only: "<red>Dieser Befehl kann nur von einem Spieler ausgeführt werden.</red>"
+  player_not_found: "<red>Spieler nicht gefunden: <yellow>%target%</yellow></red>"
+  item_not_found: "<red>Benutzerdefinierter Gegenstand nicht gefunden: <yellow>%id%</yellow></red>"
+  item_given: "<green><yellow>%amount%x %id%</yellow> an <aqua>%player%</aqua> gegeben.</green>"
+  hud_enabled: "<green>Dein HUD wurde aktiviert.</green>"
+  hud_disabled: "<red>Dein HUD wurde deaktiviert.</red>"
+  cannot_place_here: "<red>In dieser geschützten Region kannst du keine benutzerdefinierten Objekte platzieren!</red>"
+  cannot_break_here: "<red>In dieser geschützten Region kannst du keine benutzerdefinierten Objekte abbauen!</red>"
+  furniture_in_use: "<yellow>Dieser Platz ist bereits besetzt!</yellow>"
+
+pack:
+  prompt: |
+    <gradient:#00c6ff:#0072ff><bold>Tessera Server-Ressourcenpaket</bold></gradient>
+    <gray>Bitte akzeptiere das Ressourcenpaket, um 3D-Waffen,</gray>
+    <gray>funktionale Möbel und benutzerdefinierte Blöcke zu sehen!</gray>
+  loading_title: "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient>"
+  loading_subtitle: "<gray>Ressourcenpaket wird geladen, bitte warten...</gray>"
+  loaded_actionbar: "<green>✔ Ressourcenpaket erfolgreich geladen!</green>"
+  loaded_chat: "<gradient:#00c6ff:#0072ff><b>Tessera</b></gradient> <dark_gray>»</dark_gray> <green>Ressourcenpaket aktiv! Viel Spaß.</green>"
+  kick_declined: |
+    <gradient:#ff416c:#ff4b2b><bold>Ressourcenpaket erforderlich</bold></gradient>
+    
+    <gray>Du musst das Server-Ressourcenpaket akzeptieren, um zu spielen.</gray>
+    <gray>Einschalten unter: <b>Mehrspieler</b> -> <b>Server bearbeiten</b> -> <b>Server-Ressourcenpakete: Aktiviert</b>.</gray>
+  kick_failed: |
+    <gradient:#ff416c:#ff4b2b><bold>Download fehlgeschlagen</bold></gradient>
+    
+    <gray>Das Ressourcenpaket konnte nicht heruntergeladen werden.</gray>
+    <gray>Bitte überprüfe deine Internetverbindung und verbinde dich erneut.</gray>
+  declined_warning: "<yellow>⚠ Du hast das Ressourcenpaket abgelehnt.</yellow>"
+  failed_warning: "<red>⚠ Fehler beim Herunterladen des Ressourcenpakets.</red>"
+
+gui:
+  title: "<gradient:#00c6ff:#0072ff><bold>Tessera Katalog</bold></gradient>"
+  category_all: "Alle Objekte"
+  category_items: "Gegenstände"
+  category_blocks: "Blöcke"
+  category_furniture: "Möbel"

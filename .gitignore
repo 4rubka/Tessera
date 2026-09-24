@@ -1,0 +1,10 @@
+# Only the plugin source and the license are published. Everything else stays local:
+# build files, gradle wrapper, site, changelog, banners, scripts, IDE and OS files.
+/*
+!/.gitignore
+!/LICENSE
+!/src/
+
+.directory
+.DS_Store
+Thumbs.db

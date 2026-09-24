@@ -1,0 +1,1094 @@
+# ==============================================================================
+#  _______  ______  ____ ____  ______ _____         
+# |__   __||  ____|/ ___/ ___||  ____|  __ \   /\   
+#    | |   | |__  | (___ \___ \| |__  | |__) | /  \  
+#    | |   |  __|  \___ \ ___ \|  __| |  _  / / /\ \ 
+#    | |   | |____ ____) |___) | |____| | \ \/ ____ \
+#    |_|   |______|_____/_____/|______|_|  \_/_/    \_
+# ==============================================================================
+#  TESSERA ADVANCED ENGINE - MASTER PRODUCTION CONFIGURATION
+#  Version: 2.0.0
+#  Author: _4rubka_
+#  Target Platform: Paper 1.21.11 (Java 21)
+#  Base Package: com.prisma.tessera
+# ==============================================================================
+#  Welcome to the master configuration file for the Tessera Engine.
+#  Tessera integrates and surpasses the capabilities of legacy custom item plugins:
+#  • Embedded lightweight HTTP Resource Pack Distribution Server with SHA-1 hashing
+#  • Anti-Unzip Resource Pack Security Engine (ZIP Local File Header Obfuscation)
+#  • Advanced Player Welcome & Onboarding System (Titles, Sounds, Books, Actionbars)
+#  • Modern Multi-Category Interactive GUI Catalog with Search & Audio Feedback
+#  • High-performance Paper 1.21.11 DataComponent API for all custom items & blocks
+#  • Complete Adventure MiniMessage formatting support across all texts & components
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# SECTION 1: CORE PLUGIN SETTINGS & LOCALIZATION
+# ------------------------------------------------------------------------------
+core:
+  # The global prefix displayed before chat messages, broadcasts, and notifications.
+  # Supports Adventure MiniMessage formatting (<gradient:#00c6ff:#0072ff>), colors,
+  # text decorations (<bold>, <italic>), and custom glyph icons (:glyph_id: or <glyph:id>).
+  prefix: "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient> <dark_gray>»</dark_gray> "
+
+  # Active language selection for in-game messages.
+  # Tessera loads the corresponding translation file from the 'lang/' directory:
+  #   - "en" : English (Default)
+  #   - "uk" : Ukrainian (Українська)
+  #   - "de" : German (Deutsch)
+  #   - "es" : Spanish (Español)
+  # You can also create custom translation files (e.g. lang/fr.yml, lang/pl.yml).
+  # If a translation key is missing in your chosen language, Tessera automatically
+  # falls back to the English default text from lang/en.yml.
+  language: "en"
+
+  # Debug Mode: When enabled, prints detailed diagnostic logs, packet dumps,
+  # block coordinates, furniture seat offsets, and HTTP connection metrics to console.
+  # Recommended to keep FALSE on production servers to maximize TPS.
+  debug: false
+
+  # Whether to display a comprehensive registration summary on server boot and reloads.
+  # Summarizes registered items, custom blocks, furniture types, recipes, and glyphs.
+  verbose_startup: true
+
+  # Automatic Paper API version compatibility check.
+  version_check: true
+
+  # Anonymous plugin usage metrics to assist in platform optimization.
+  metrics: true
+
+  # Timeout in milliseconds for asynchronous file I/O operations.
+  io_timeout_ms: 5000
+
+  # Server network brand name displayed in loading screens and welcome menus.
+  server_name: "Tessera Network"
+
+
+# ------------------------------------------------------------------------------
+# SECTION 2: SERVER RESOURCE PACK & EMBEDDED HTTP SERVER (SELF-HOST)
+# ------------------------------------------------------------------------------
+# Tessera features an ultra-low overhead, embedded HTTP distribution server built
+# directly on Java's native com.sun.net.httpserver.HttpServer.
+# Tessera automatically compiles 'tessera-pack.zip', computes its SHA-1 checksum,
+# starts the web server, and prompts joining players with zero external host setup.
+pack:
+  # Resource Pack Metadata
+  meta:
+    # Description displayed in the Minecraft resource pack selection menu.
+    description: "<gradient:#00c6ff:#0072ff>Official Tessera Server Resource Pack</gradient>"
+
+    # Resource pack format version.
+    # For Minecraft 1.21.4 through 1.21.11, pack_format 34 (or higher) is standard.
+    pack_format: 34
+
+    # Automatically generate assets and build tessera-pack.zip on startup and reload.
+    auto_generate: true
+
+    # Delete intermediate temporary generation directories once the ZIP is compiled.
+    clean_temp_files: true
+
+    # Automatically copy 'pack.png' from the pack directory into the ZIP root.
+    include_pack_icon: true
+
+    # ZIP compression level (0 = uncompressed store, 6 = balanced, 9 = maximum).
+    compression_level: 6
+
+  # ----------------------------------------------------------------------------
+  # Embedded Lightweight HTTP Server
+  # ----------------------------------------------------------------------------
+  server:
+    # Enable the built-in HTTP server for direct resource pack distribution.
+    enabled: true
+
+    # Local IP interface to bind ('0.0.0.0' binds to all available network interfaces).
+    host: "0.0.0.0"
+
+    # Port on which the HTTP server will listen.
+    # Ensure this port is port-forwarded and allowed in your firewall (e.g. ufw allow 8085/tcp).
+    port: 8085
+
+    # Public domain or external IP address visible to joining players.
+    # If testing locally, use 'localhost:8085'.
+    # For production servers, specify your server's public IP or domain:
+    # Example: "mc.myserver.com:8085" or "pack.myserver.net:8085".
+    domain: "localhost:8085"
+
+    # Optional external resource pack URL (e.g. MCPacks, Dropbox, GitHub release, CDN).
+    # If specified and non-empty, Tessera will still build and protect the pack,
+    # but players will be directed to download from this external URL instead.
+    external_url: ""
+
+    # Whether accepting the resource pack is strictly required to play on this server.
+    # If true, declining or failing will trigger the enforcement kick actions below.
+    required: true
+
+    # Kick the player immediately if they decline (DECLINED) the resource pack prompt.
+    kick_on_decline: true
+
+    # Kick the player if the download fails due to network error or hash mismatch (FAILED_DOWNLOAD).
+    kick_on_fail: false
+
+    # Maximum download retries before executing kick_on_fail action.
+    max_download_retries: 3
+
+    # Automatic delivery settings on player join
+    auto_apply:
+      # Automatically prompt joining players with the resource pack download.
+      enabled: true
+
+      # Delay in ticks before prompting player with the resource pack download.
+      # 10 to 20 ticks (0.5 - 1.0 second) ensures the player entity is fully loaded.
+      delay_ticks: 10
+
+    # Rate limiting & DoS defense for HTTP pack downloads
+    rate_limit:
+      # Protect the server from excessive spam requests downloading the pack file.
+      enabled: true
+
+      # Maximum downloads permitted per individual IP address within the cooldown window.
+      max_requests_per_ip: 5
+
+      # Cooldown reset period in minutes after which IP request counters reset.
+      cooldown_minutes: 15
+
+      # Block requests that do not originate from Minecraft client User-Agents.
+      block_non_game_requests: false
+
+  # ----------------------------------------------------------------------------
+  # Resource Pack Anti-Unzip & Asset Protection Engine
+  # ----------------------------------------------------------------------------
+  # Protects your custom 3D models, textures, and sounds from being extracted and stolen
+  # by asset rippers using WinRAR, 7-Zip, Ark, or standard archive utilities.
+  # Standard tools fail with 'Archive is corrupt' or 'Path traversal detected',
+  # while the Minecraft client reads entries directly from the Central Directory.
+  protection:
+    # Master switch for resource pack protection.
+    protect_from_unzip: true
+
+    # Protection security level:
+    # Level 1 - Clears CRC-32 and local header uncompressed/compressed sizes.
+    #           Minecraft client streams archive entries via Central Directory,
+    #           while standard unpackers report corrupted header sizes and abort.
+    # Level 2 - (Recommended) Applies Level 1 + directory-traversal header obfuscation
+    #           ('../../\\\\') on local file headers. Triggers anti-path-traversal
+    #           protections in 7-Zip, WinRAR, and Ark causing extraction to fail.
+    # Level 3 - Applies Level 2 + non-standard internal central directory attribute flags.
+    level: 2
+
+    # Strip formatting, comments, and extra whitespace from all JSON files.
+    minify_json: true
+
+    # Obfuscate internal model and texture keys to irreversible hash names.
+    obfuscate_paths: false
+
+    # Embed server watermark in pack metadata to identify server ownership.
+    embed_watermark: true
+    watermark_text: "Protected by Tessera Engine - Copyright 2026"
+
+  # ----------------------------------------------------------------------------
+  # Player Protection During Pack Download & Loading
+  # ----------------------------------------------------------------------------
+  # Prevents players from dying, suffocating, or taking damage while their client
+  # is frozen downloading and applying custom textures.
+  protect_player:
+    # Enable player protections while resource pack is downloading.
+    enabled: true
+
+    # Freeze player coordinates so they cannot walk or jump off cliffs while loading.
+    lock_movement: true
+
+    # Apply darkness/blindness effect so the screen is gracefully faded during load.
+    blindness: true
+
+    # Make player invulnerable to entity attacks, fall damage, drowning, and lava.
+    invulnerable: true
+
+    # Cancel command execution while downloading resource pack.
+    cancel_commands: true
+
+    # Maximum duration in seconds to keep player protected before automatic timeout.
+    timeout_seconds: 45
+
+  # Sound effects played during resource pack lifecycle
+  sounds:
+    # Sound played when player successfully loads and verifies the resource pack.
+    on_loaded: "ENTITY_PLAYER_LEVELUP"
+
+    # Sound played when player accepts download prompt.
+    on_accepted: "UI_BUTTON_CLICK"
+
+    # Sound played when download fails or is rejected.
+    on_error: "ENTITY_VILLAGER_NO"
+
+  # ----------------------------------------------------------------------------
+  # Smart Resource Pack Ingestion & Auto-Distributor Engine
+  # ----------------------------------------------------------------------------
+  # Drop any pre-made .zip resource pack into the 'imports/' folder.
+  # Tessera will automatically unpack, categorize textures/models/sounds/fonts,
+  # merge JSON files conflict-free, auto-generate item/block templates,
+  # protect with Anti-Unzip, update the HTTP server, and push to players!
+  importer:
+    # Directory where external .zip resource packs are dropped for auto-import.
+    folder: "imports"
+
+    # Automatically watch the imports directory for newly dropped .zip files.
+    auto_watch: true
+
+    # Check interval in seconds for newly dropped .zip files.
+    watch_interval_seconds: 15
+
+    # Automatically generate custom item YAML templates for newly imported models.
+    auto_generate_items: true
+
+    # Automatically generate custom block YAML templates for newly imported blocks.
+    auto_generate_blocks: true
+
+    # Automatically re-prompt all online players to download the updated pack.
+    broadcast_to_online_players: true
+
+    # Move processed .zip files to 'imports/processed/' to prevent duplicate imports.
+    move_to_processed: true
+
+
+# ------------------------------------------------------------------------------
+# SECTION 3: PLAYER WELCOME & ONBOARDING SYSTEM
+# ------------------------------------------------------------------------------
+# Comprehensive welcome greeting system supporting first-join celebrations,
+# returning player titles, custom sounds, actionbar alerts, and written starter books.
+welcome:
+  # Master toggle for player welcome system.
+  enabled: true
+
+  # Delay in server ticks before displaying the welcome sequence.
+  # 25 ticks (1.25 seconds) gives the player time to render the world.
+  delay_ticks: 25
+
+  # ----------------------------------------------------------------------------
+  # First-Join Welcome Sequence (Triggered once per unique player)
+  # ----------------------------------------------------------------------------
+  first_join:
+    # Enable celebration on a player's very first join to the server.
+    enabled: true
+
+    # Sound effect played to the new player.
+    sound:
+      type: "UI_TOAST_CHALLENGE_COMPLETE"
+      volume: 1.0
+      pitch: 1.0
+
+    # Title & Subtitle displayed across player's screen.
+    title: "<gradient:#00c6ff:#0072ff><bold>WELCOME TO THE SERVER</bold></gradient>"
+    subtitle: "<gray>Greetings, <yellow>%player%</yellow>! Welcome to our world.</gray>"
+    fade_in_ticks: 15
+    stay_ticks: 80
+    fade_out_ticks: 20
+
+    # Actionbar notification.
+    actionbar: "<gradient:#f12711:#f5af19>✨ Have fun on your first adventure! ✨</gradient>"
+
+    # Multi-line chat greeting sent exclusively to the joining player.
+    chat_lines:
+      - "<gradient:#00c6ff:#0072ff><bold>==================================================</bold></gradient>"
+      - " <gradient:#00c6ff:#0072ff><bold>TESSERA ENGINE</bold></gradient> <dark_gray>»</dark_gray> <gray>Welcome <aqua>%player%</aqua> to our community!</gray>"
+      - " <dark_gray>•</dark_gray> <gray>We feature custom weapons, functional furniture, and unique blocks.</gray>"
+      - " <dark_gray>•</dark_gray> <gray>Type <click:run_command:'/tessera menu'><hover:show_text:'<green>Click to open catalog!'><yellow><u>/tessera menu</u></yellow></hover></click> to explore our item catalog!</gray>"
+      - " <dark_gray>•</dark_gray> <gray>Type <click:run_command:'/tessera hud'><hover:show_text:'<green>Toggle HUD!'><yellow><u>/tessera hud</u></yellow></hover></click> to toggle your on-screen HUD.</gray>"
+      - " <dark_gray>•</dark_gray> <gray>Be respectful, follow server rules, and enjoy your stay!</gray>"
+      - "<gradient:#00c6ff:#0072ff><bold>==================================================</bold></gradient>"
+
+    # Global server broadcast announcement.
+    broadcast:
+      enabled: true
+      message: "<gradient:#00c6ff:#0072ff><bold>Welcome</bold></gradient> <aqua>%player%</aqua> <gray>has joined the server for the first time! Say hi! 👋</gray>"
+
+    # --------------------------------------------------------------------------
+    # Written Welcome Guide Book (Delivered to player inventory)
+    # --------------------------------------------------------------------------
+    book:
+      # Give a custom starter guide book on first join.
+      enabled: true
+
+      # Title of the written book.
+      title: "<gradient:#00c6ff:#0072ff>Starter Guide</gradient>"
+
+      # Author name shown in book tooltip.
+      author: "Tessera Server"
+
+      # Book content pages (Each list item represents an individual book page).
+      pages:
+        - |
+          <bold><gradient:#00c6ff:#0072ff>Welcome to Tessera!</gradient></bold>
+          
+          <dark_gray>-----------------</dark_gray>
+          Welcome, <yellow>%player%</yellow>!
+          This server is powered by
+          the <blue>Tessera Engine</blue>.
+          
+          You will encounter:
+          • Custom Items & Gear
+          • Functional Furniture
+          • Interactive Custom Blocks
+          • Dynamic HUD overlay
+          
+          Turn the page for help!
+        - |
+          <bold><underlined>Useful Commands:</underlined></bold>
+          
+          <blue>/tessera menu</blue>
+          Opens the interactive
+          item catalog.
+          
+          <blue>/tessera hud</blue>
+          Toggles the on-screen
+          status bar.
+          
+          <blue>/spawn</blue>
+          Returns you safely to
+          spawn hub.
+        - |
+          <bold><underlined>Custom Mechanics:</underlined></bold>
+          
+          <dark_green>• Furniture:</dark_green>
+          Right-click chairs or
+          couches to sit down!
+          Sneak to stand up.
+          
+          <dark_green>• Custom Blocks:</dark_green>
+          Can be mined with matching
+          pickaxes and have unique
+          hardness and drops.
+          
+          Enjoy your adventure!
+        - |
+          <bold><underlined>Community Links:</underlined></bold>
+          
+          Website: <blue>myserver.com</blue>
+          Discord: <blue>discord.gg/server</blue>
+          Store: <blue>shop.myserver.com</blue>
+          
+          Have fun playing!
+
+  # ----------------------------------------------------------------------------
+  # Regular Join Sequence (Triggered on subsequent visits)
+  # ----------------------------------------------------------------------------
+  regular_join:
+    # Enable greeting on returning player visits.
+    enabled: true
+
+    # Sound played on returning visit.
+    sound:
+      type: "ENTITY_EXPERIENCE_ORB_PICKUP"
+      volume: 0.8
+      pitch: 1.2
+
+    # Title & Subtitle.
+    title: "<gradient:#00c6ff:#0072ff><bold>WELCOME BACK</bold></gradient>"
+    subtitle: "<gray>Hello, <aqua>%player%</aqua>! Enjoy your adventure.</gray>"
+    fade_in_ticks: 10
+    stay_ticks: 50
+    fade_out_ticks: 15
+
+    # Actionbar notification.
+    actionbar: "<gray>Welcome back, <yellow>%player%</yellow>!</gray>"
+
+    # Returning chat greeting.
+    chat_lines:
+      - "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient> <dark_gray>»</dark_gray> <gray>Welcome back, <aqua>%player%</aqua>! Use <click:run_command:'/tessera menu'><yellow><u>/tessera menu</u></yellow></click> to view items.</gray>"
+
+    # Server broadcast on returning join.
+    broadcast:
+      enabled: false
+      message: "<gray>[<green>+</green>] <yellow>%player%</yellow> joined the game.</gray>"
+
+
+# ------------------------------------------------------------------------------
+# SECTION 4: CUSTOM ITEMS MODULE
+# ------------------------------------------------------------------------------
+# The items module parses and instantiates custom item templates from the items/ folder
+# using modern Paper 1.21.11 DataComponent API with full durability and repair support.
+items:
+  # Base directory within the plugin folder where custom item YAMLs are loaded.
+  folder: "items"
+
+  # Persistent Data Container key used to identify Tessera custom items.
+  # Changing this will invalidate items already generated in player inventories!
+  pdc_key: "item_id"
+
+  # CustomModelData assignment mode:
+  # 'manual' - values are taken strictly from the custom_model_data field in each item's YAML.
+  # 'auto'   - values are sequentially allocated from the auto_model_data range below.
+  model_data_mode: "manual"
+
+  # Range for automatic CustomModelData generation
+  auto_model_data:
+    min: 10000
+    max: 999999
+
+  # Custom item durability system
+  durability:
+    # Use modern Paper DataComponent API for indestructible/damage components.
+    use_data_components: true
+
+    # Show remaining durability in item lore if custom max durability is defined.
+    show_in_lore: true
+
+    # Lore formatting template for custom durability bars.
+    lore_format: "<gray>Durability: <yellow>%current%</yellow> / <gold>%max%</gold></gray>"
+
+    # Visual durability bar settings
+    bar:
+      enabled: false
+      total_bars: 20
+      symbol: "■"
+      color_healthy: "<green>"
+      color_half: "<yellow>"
+      color_low: "<red>"
+      color_empty: "<dark_gray>"
+
+  # Default sound played when player eats custom food items.
+  food_eat_sound: "ENTITY_PLAYER_BURP"
+
+  # Default sound played when player equips custom armor items.
+  armor_equip_sound: "ITEM_ARMOR_EQUIP_GENERIC"
+
+  # Default cooldown settings for weapon and tool interactions
+  cooldowns:
+    default_click_ticks: 5
+    sound: "UI_BUTTON_CLICK"
+
+
+# ------------------------------------------------------------------------------
+# SECTION 5: CUSTOM BLOCKS MODULE
+# ------------------------------------------------------------------------------
+# Custom blocks are tracked via chunk-relative PersistentDataContainer coordinates
+# or TileState storage with custom mining speed, sound groups, and explosion physics.
+blocks:
+  # Base directory where custom block definitions are loaded.
+  folder: "blocks"
+
+  # Persistent Data Container storage strategy for chunk blocks:
+  # 'CHUNK_PDC' stores coordinates in the chunk root container (fast, non-intrusive).
+  # 'TILE_STATE' is used when placing blocks on TileEntities.
+  storage_strategy: "CHUNK_PDC"
+
+  # Physics & Interaction rules
+  physics:
+    # Allow vanilla pistons to push or pull custom blocks.
+    # When false, custom blocks behave like bedrock/obsidian against pistons.
+    piston_move_allowed: false
+
+    # Allow TNT, Creepers, and explosions to break custom blocks.
+    explosion_break_allowed: true
+
+    # Drop the custom block item when destroyed by an explosion.
+    drop_on_explosion: true
+
+  # Default sound group applied to custom blocks if not specifically configured.
+  default_sound_group:
+    break_sound: "BLOCK_STONE_BREAK"
+    place_sound: "BLOCK_STONE_PLACE"
+    step_sound: "BLOCK_STONE_STEP"
+    hit_sound: "BLOCK_STONE_HIT"
+    fall_sound: "BLOCK_STONE_FALL"
+
+  # Default mining hardness if not specified in block template.
+  default_hardness: 2.0
+
+  # Default blast resistance against explosions.
+  default_blast_resistance: 6.0
+
+  # Particle effect displayed when a custom block is mined or broken.
+  break_particles:
+    enabled: true
+    count: 20
+    offset_x: 0.3
+    offset_y: 0.3
+    offset_z: 0.3
+
+  # Custom block lighting emission
+  lighting:
+    allow_custom_light: true
+
+
+# ------------------------------------------------------------------------------
+# SECTION 6: FURNITURE & SITTING MODULE
+# ------------------------------------------------------------------------------
+# Furniture pieces are rendered via modern ItemDisplay entities with collision
+# managed through Interaction entities and sitting powered by hidden ArmorStands.
+furniture:
+  # Base directory where furniture definitions are loaded.
+  folder: "furniture"
+
+  # Display entity type used to render 3D furniture models:
+  # Options: 'ITEM_DISPLAY', 'BLOCK_DISPLAY', 'ARMOR_STAND'
+  default_display_type: "ITEM_DISPLAY"
+
+  # Hitbox interaction engine:
+  # Options: 'INTERACTION' (modern 1.21 entity), 'ARMOR_STAND', 'BARRIER_BLOCK'
+  hitbox_type: "INTERACTION"
+
+  # Sitting mechanics for chairs, sofas, and stools
+  sitting:
+    # Allow players to right-click furniture with seat definitions to sit down.
+    enabled: true
+
+    # Vertical Y offset for seat positioning (adjusts player height above chair).
+    vertical_offset: 0.35
+
+    # Sound played when player sits onto furniture.
+    sit_sound: "BLOCK_WOOL_STEP"
+
+    # Sound played when player stands up / dismounts (Presses Shift).
+    dismount_sound: "ENTITY_ARMOR_STAND_FALL"
+
+    # Eject the sitting player automatically if the furniture is broken.
+    eject_on_break: true
+
+  # Furniture placement settings
+  placement:
+    # Rotate furniture orientation according to player facing yaw direction.
+    snap_to_cardinal: true
+
+    # Allowed rotation steps: 4 (90 deg), 8 (45 deg), 360 (free rotation).
+    rotation_steps: 4
+
+    # Allow placing furniture in waterlogged state if water is present.
+    allow_waterlogged: false
+
+  # Protection enforcement
+  security:
+    # Prevent breaking furniture inside protected land claims without permission.
+    enforce_protection: true
+
+
+# ------------------------------------------------------------------------------
+# SECTION 7: CRAFTING RECIPES MODULE
+# ------------------------------------------------------------------------------
+recipes:
+  # Base directory where custom crafting recipe files are loaded.
+  folder: "recipes"
+
+  # Protect custom items from being consumed as ordinary vanilla materials
+  # in standard vanilla crafting tables (e.g. using a Ruby Sword as vanilla iron).
+  protect_custom_items: true
+
+  # Automatically register and send custom recipe advancements to players.
+  auto_discover: true
+
+  # Allow custom recipes to overwrite vanilla recipes with identical ingredients.
+  allow_vanilla_overrides: false
+
+  # Sound played when player crafts a custom item.
+  craft_sound:
+    enabled: true
+    type: "BLOCK_ANVIL_USE"
+    volume: 0.6
+    pitch: 1.8
+
+
+# ------------------------------------------------------------------------------
+# SECTION 8: FONTS & GLYPHS MODULE
+# ------------------------------------------------------------------------------
+glyphs:
+  # Base directory where glyph YAML definitions are loaded.
+  folder: "glyphs"
+
+  # Automatic Unicode character code allocation range.
+  # By default allocates in the Unicode Private Use Area (PUA) starting at \uE000.
+  unicode_range:
+    start_hex: "E000"
+    end_hex: "F8FF"
+
+  # Automatic glyph text replacement in different game channels:
+  replacements:
+    # Replace glyph placeholders in player chat messages.
+    in_chat: true
+
+    # Replace glyph placeholders in item lore and display names.
+    in_item_lore: true
+
+    # Replace glyph placeholders in screen titles and subtitles.
+    in_titles: true
+
+    # Replace glyph placeholders in player action bars.
+    in_actionbar: true
+
+    # Replace glyph placeholders in inventory GUI titles.
+    in_gui_titles: true
+
+    # Replace glyph placeholders in player tab list.
+    in_tablist: true
+
+  # Placeholder syntax formats supported:
+  # :glyph_id: and <glyph:glyph_id>
+  syntax:
+    colon_format: true
+    tag_format: true
+
+
+# ------------------------------------------------------------------------------
+# SECTION 9: HEADS-UP DISPLAY (HUD) MODULE
+# ------------------------------------------------------------------------------
+hud:
+  # Master toggle for on-screen HUD rendering ticker.
+  enabled: true
+
+  # Update interval in server ticks.
+  # 2 ticks = 10 updates per second (very smooth without causing TPS lag).
+  update_interval_ticks: 2
+
+  # Base directory for HUD layouts.
+  folder: "hud"
+
+  # Default HUD display method:
+  # 'ACTIONBAR' - Displays on the player actionbar (default, compatible with vanilla)
+  # 'BOSSBAR'   - Displays in top BossBar
+  display_channel: "ACTIONBAR"
+
+  # Allow individual players to toggle their HUD on/off using '/tessera hud'.
+  allow_player_toggle: true
+
+  # Save player HUD toggle preference in persistent data container between sessions.
+  persist_player_preference: true
+
+  # ----------------------------------------------------------------------------
+  # Pause Menu Banner
+  # ----------------------------------------------------------------------------
+  # Replaces the "Game Menu" title of the Escape menu with the :pause_banner: glyph.
+  # The pack writes it into every client language file, so it shows for all players.
+  pause_banner: true
+
+  # ----------------------------------------------------------------------------
+  # Top Screen BossBar Banner
+  # ----------------------------------------------------------------------------
+  # Shows a banner at the top center of the screen while playing.
+  # The client blurs the whole HUD behind menus, so this banner is not visible in the
+  # Escape menu. Use pause_banner above for that.
+  top_banner:
+    # Master switch for the BossBar banner.
+    enabled: false
+    # Title format. :top_banner: is sized for this spot; other glyphs may be cut off at the top.
+    title: "<white>:top_banner:</white>"
+    # BossBar color (BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW).
+    # With hide_bar on, bars of this color become invisible for every plugin, so pick a color
+    # nothing else on the server uses.
+    color: "BLUE"
+    # Make the bar itself transparent so only the banner is visible.
+    hide_bar: true
+    # BossBar style (PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20).
+    style: "PROGRESS"
+
+# ------------------------------------------------------------------------------
+# SECTION 10: INTERACTIVE GUI & CATALOG SYSTEM
+# ------------------------------------------------------------------------------
+gui:
+  # Title displayed on the top border of the item browser GUI.
+  title: "<gradient:#00c6ff:#0072ff><bold>Tessera Catalog</bold></gradient>"
+
+  # Number of inventory rows (Must be between 3 and 6, default 6).
+  rows: 6
+
+  # Decorative border glass pane colors
+  borders:
+    primary_color: "CYAN_STAINED_GLASS_PANE"
+    secondary_color: "BLUE_STAINED_GLASS_PANE"
+    separator_color: "GRAY_STAINED_GLASS_PANE"
+
+  # Sound effects for GUI interactions
+  sounds:
+    click: "UI_BUTTON_CLICK"
+    page_turn: "ITEM_BOOK_PAGE_TURN"
+    give_item: "ENTITY_ITEM_PICKUP"
+    error: "ENTITY_VILLAGER_NO"
+
+  # Permission required to take custom items directly from the catalog.
+  # Left-Click: Take 1, Right-Click: Take 64, Shift-Click: Take 16.
+  admin_give_permission: "tessera.admin"
+
+
+# ------------------------------------------------------------------------------
+# SECTION 11: THIRD-PARTY PLUGIN HOOKS & COMPATIBILITY
+# ------------------------------------------------------------------------------
+hooks:
+  # WorldGuard region protection integration
+  worldguard:
+    enabled: true
+    # Prevent placing custom blocks or furniture inside regions where player lacks build permission.
+    respect_build_flag: true
+    # Respect custom flags if defined.
+    respect_interact_flag: true
+
+  # GriefPrevention integration
+  griefprevention:
+    enabled: true
+    # Respect claim build permissions for custom blocks and furniture.
+    respect_claims: true
+
+  # Towny integration
+  towny:
+    enabled: true
+    respect_town_permissions: true
+
+  # PlaceholderAPI (PAPI) integration
+  placeholderapi:
+    enabled: true
+    # Parse PAPI placeholders inside item lore, chat, HUDs, and welcome messages.
+    parse_in_chat: true
+    parse_in_hud: true
+    parse_in_welcome: true
+
+  # Vault economy integration
+  vault:
+    enabled: true
+
+  # LuckPerms permission checking optimization
+  luckperms:
+    enabled: true
+    cache_permissions: true
+
+
+# ------------------------------------------------------------------------------
+# SECTION 12: PERFORMANCE & ASYNC OPTIMIZATIONS
+# ------------------------------------------------------------------------------
+performance:
+  # Run resource pack hash calculations on async background threads.
+  async_pack_hash: true
+
+  # Clean chunk block caches when chunks are unloaded from memory.
+  clean_unloaded_chunks: true
+
+  # Maximum number of furniture display entities tracked per chunk before throttling.
+  max_furniture_per_chunk: 128
+
+  # Rate limit block place and interact packets to prevent exploit clickers.
+  packet_rate_limit:
+    enabled: true
+    max_packets_per_second: 50
+
+
+# ------------------------------------------------------------------------------
+# SECTION 13: MESSAGES & LOCALIZATION (Adventure MiniMessage)
+# ------------------------------------------------------------------------------
+messages:
+  # General command responses
+  no_permission: "<red>You do not have permission to execute this command.</red>"
+  unknown_command: "<red>Unknown command. Type <yellow>/tessera info</yellow> for help.</red>"
+  reload_success: "<green>All Tessera configurations, items, blocks, and recipes reloaded!</green>"
+  player_only: "<red>This command can only be executed by an in-game player.</red>"
+  player_not_found: "<red>Player not found: <yellow>%target%</yellow></red>"
+  item_not_found: "<red>Custom item or block not found: <yellow>%id%</yellow></red>"
+  item_given: "<green>Gave <yellow>%amount%x %id%</yellow> to <aqua>%player%</aqua>.</green>"
+
+  # HUD notifications
+  hud_enabled: "<green>Your on-screen HUD has been enabled.</green>"
+  hud_disabled: "<red>Your on-screen HUD has been disabled.</red>"
+
+  # Protection & claim warnings
+  cannot_place_here: "<red>You cannot place custom objects in this protected region!</red>"
+  cannot_break_here: "<red>You cannot break custom objects in this protected region!</red>"
+  furniture_in_use: "<yellow>Someone is already sitting here!</yellow>"
+
+  # Resource pack prompts and alerts
+  pack:
+    prompt: |
+      <gradient:#00c6ff:#0072ff><bold>✦ TESSERA OFFICIAL SERVER PACK ✦</bold></gradient>
+      <dark_gray>────────────────────────────────────────────</dark_gray>
+      <gray>❖ Custom 3D Weapons, Shields, Tools & Bows</gray>
+      <gray>❖ Functional Interactive Furniture & Seating</gray>
+      <gray>❖ Aesthetic Dark-Mode HUD & Dynamic Audio</gray>
+      <dark_gray>────────────────────────────────────────────</dark_gray>
+      <yellow>Click [ACCEPT] to enable custom models & textures!</yellow>
+    loading_title: "<gradient:#00c6ff:#0072ff><bold>Tessera</bold></gradient>"
+    loading_subtitle: "<gray>Applying resource pack, please wait...</gray>"
+    loaded_actionbar: "<green>✔ Resource pack applied successfully!</green>"
+    loaded_chat: "<gradient:#00c6ff:#0072ff><b>Tessera</b></gradient> <dark_gray>»</dark_gray> <green>Resource pack loaded! Enjoy the custom content.</green>"
+    kick_declined: |
+      <gradient:#ff416c:#ff4b2b><bold>Resource Pack Required</bold></gradient>
+      
+      <gray>You must accept the server resource pack to play on this server.</gray>
+      <gray>To enable it: <b>Multiplayer</b> -> <b>Edit Server</b> -> <b>Server Resource Packs: Enabled</b>.</gray>
+    kick_failed: |
+      <gradient:#ff416c:#ff4b2b><bold>Resource Pack Failed</bold></gradient>
+      
+      <gray>The resource pack failed to download to your client.</gray>
+      <gray>Please verify your internet connection and reconnect to the server.</gray>
+    declined_warning: "<yellow>⚠ You declined the resource pack. Custom items may appear as default vanilla textures.</yellow>"
+    failed_warning: "<red>⚠ Resource pack download encountered an error. Reconnect or try /tessera pack reload.</red>"
+
+
+# ------------------------------------------------------------------------------
+# SECTION 14: PERMISSIONS REFERENCE TABLE
+# ------------------------------------------------------------------------------
+# Full reference table of all Tessera permission nodes for LuckPerms:
+#
+# • tessera.admin        - Full access to all administrative commands (/tessera reload, give, pack, welcome)
+# • tessera.user.give    - Permission to take custom items via command or clicking in the GUI catalog
+# • tessera.command.menu - Permission to open the interactive GUI item catalog (/tessera menu)
+# • tessera.command.hud  - Permission to toggle personal on-screen HUD (/tessera hud)
+# • tessera.command.info - Permission to view engine system information (/tessera info)
+# • tessera.pack.bypass  - Permission to bypass mandatory server resource pack prompt
+
+
+# ------------------------------------------------------------------------------
+# SECTION 15: MIGRATION GUIDE FROM LEGACY CUSTOM ITEM PLUGINS
+# ------------------------------------------------------------------------------
+# How to migrate your assets and configs to Tessera:
+#
+# 1. ITEMS (items/):
+#    - Place item textures into pack/assets/tessera/textures/item/
+#    - Place 3D model JSONs into pack/assets/tessera/models/item/
+#    - Create item YAML files in items/ following the template below.
+#
+# 2. BLOCKS (blocks/):
+#    - Define base material, display name, mining hardness, and required tool tier.
+#    - Configure custom sound groups in sound_group.
+#    - Place block YAML files into blocks/.
+#
+# 3. FURNITURE (furniture/):
+#    - Use display_type: ITEM_DISPLAY for maximum performance on Paper 1.21.11.
+#    - Configure seat: enabled: true with vertical Y offset for comfortable sitting.
+#    - Place furniture YAML files into furniture/.
+#
+# 4. FONTS & GLYPHS (glyphs/):
+#    - Place PNG icons into pack/assets/tessera/textures/font/
+#    - Define glyph YAML configurations in glyphs/ specifying height and ascent.
+#
+# 5. RECIPES (recipes/):
+#    - Supported recipe formats include SHAPED (3x3 grid), SHAPELESS (crafting grid),
+#      FURNACE (smelting), BLASTING, SMOKER, and CAMPFIRE cooking.
+
+
+# ------------------------------------------------------------------------------
+# SECTION 16: ADVANCED COMBAT & TOOL MECHANICS
+# ------------------------------------------------------------------------------
+# Tessera provides expandable mechanics for legendary equipment:
+#
+# 1. LifeSteal:
+#    Restores a percentage of dealt damage back to the attacker's health.
+#
+# 2. Explosive Strike:
+#    Creates a safe or destructive explosion around the target entity upon strike.
+#
+# 3. Thunder Strike:
+#    Summons a lightning strike on critical hits or projectile impact.
+#
+# 4. Poison / Bleed:
+#    Applies periodic bleeding or toxicity damage to the target.
+#
+# 5. Custom Projectiles (Bows & Crossbows):
+#    Allows customizing projectile velocity, gravity scaling, and trail particle effects.
+
+
+# ------------------------------------------------------------------------------
+# SECTION 17: CONFIGURATION TEMPLATES & EXAMPLES
+# ------------------------------------------------------------------------------
+# Detailed YAML templates for each module folder:
+#
+# EXAMPLE 1: Custom Sword in items/ruby_sword.yml
+# -------------------------------------------------
+# ruby_sword:
+#   material: DIAMOND_SWORD
+#   display_name: "<gradient:#ff416c:#ff4b2b><bold>Ruby Blade</bold></gradient>"
+#   lore:
+#     - "<gray>Forged from pure, deep ruby crystals."
+#     - "<dark_gray>Ancient weapon of ancient rulers."
+#     - ""
+#     - "<red>⚔ Attack Damage: <white>+12.5</white>"
+#     - "<yellow>⚡ Attack Speed: <white>1.8</white>"
+#   custom_model_data: 10001
+#   unbreakable: false
+#   max_durability: 2500
+#   max_stack_size: 1
+#   mechanics:
+#     - type: "lifesteal"
+#       heal_percent: 0.15
+#
+# EXAMPLE 2: Custom Food in items/golden_donut.yml
+# ---------------------------------------------------
+# golden_donut:
+#   material: APPLE
+#   display_name: "<gold><bold>Golden Donut</bold></gold>"
+#   lore:
+#     - "<yellow>Delicious pastry glazed with edible gold leaf."
+#     - "<gray>Restores 8 food points and grant regeneration."
+#   custom_model_data: 10002
+#   max_stack_size: 16
+#   food:
+#     nutrition: 8
+#     saturation: 12.0
+#     eat_seconds: 1.2
+#     effects:
+#       - type: "REGENERATION"
+#         duration_seconds: 10
+#         amplifier: 1
+#
+# EXAMPLE 3: Custom Block in blocks/ruby_ore.yml
+# ---------------------------------------------------
+# ruby_ore:
+#   material: DEEPSLATE_DIAMOND_ORE
+#   display_name: "<gradient:#ff416c:#ff4b2b><bold>Ruby Ore</bold></gradient>"
+#   custom_model_data: 20001
+#   hardness: 4.5
+#   blast_resistance: 12.0
+#   requires_tool: true
+#   tool_tier: "DIAMOND"
+#   sound_group:
+#     break_sound: "BLOCK_DEEPSLATE_BREAK"
+#     place_sound: "BLOCK_DEEPSLATE_PLACE"
+#     step_sound: "BLOCK_DEEPSLATE_STEP"
+#   drops:
+#     - item: "ruby"
+#       min_amount: 1
+#       max_amount: 3
+#       fortune_multiplier: true
+#
+# EXAMPLE 4: Custom Furniture in furniture/throne.yml
+# -----------------------------------------------------
+# royal_throne:
+#   item_id: "royal_throne_item"
+#   display_name: "<gold><bold>Royal Throne</bold></gold>"
+#   display_type: "ITEM_DISPLAY"
+#   hitbox:
+#     type: "INTERACTION"
+#     width: 1.0
+#     height: 1.5
+#   seat:
+#     enabled: true
+#     offset_y: 0.45
+#     sit_sound: "BLOCK_WOOL_STEP"
+#   rotation_step: 4
+#
+# EXAMPLE 5: Custom Recipe in recipes/ruby_craft.yml
+# ---------------------------------------------------------
+# ruby_sword_craft:
+#   type: "SHAPED"
+#   result: "ruby_sword"
+#   result_amount: 1
+#   shape:
+#     - " R "
+#     - " R "
+#     - " S "
+#   ingredients:
+#     R: "ruby"
+#     S: "STICK"
+#
+# EXAMPLE 6: Custom Glyph in glyphs/icons.yml
+# --------------------------------------------------
+# ruby_icon:
+#   char: "\uE001"
+#   path: "assets/tessera/textures/font/ruby.png"
+#   ascent: 8
+#   height: 8
+#
+# EXAMPLE 7: Heads-Up Display in hud/actionbar.yml
+# ------------------------------------------------
+# main_hud:
+#   channel: "ACTIONBAR"
+#   update_rate: 2
+#   layers:
+#     - text: "<gradient:#00c6ff:#0072ff>❤ %player_health%/%player_max_health%</gradient>  <yellow>⭐ %player_level%</yellow>  <gray>⌚ %server_time%</gray>"
+
+
+# ------------------------------------------------------------------------------
+# SECTION 18: DEVELOPER PUBLIC API USAGE
+# ------------------------------------------------------------------------------
+# Tessera provides a clean, robust, static developer API for external plugins:
+#
+# // 1. Retrieve an ItemStack by custom ID:
+# ItemStack stack = com.prisma.tessera.api.Tessera.getItem("ruby_sword");
+#
+# // 2. Verify whether an ItemStack is a Tessera custom item:
+# boolean isCustom = com.prisma.tessera.api.Tessera.isCustomItem(itemStack);
+#
+# // 3. Get the unique string ID of a custom item:
+# String id = com.prisma.tessera.api.Tessera.getCustomItemId(itemStack);
+#
+# // 4. Get the item template (ItemTemplate):
+# ItemTemplate template = com.prisma.tessera.api.Tessera.getTemplate("ruby_sword");
+#
+# // 5. Check if an item ID exists in registries:
+# boolean exists = com.prisma.tessera.api.Tessera.exists("ruby_ore");
+#
+# // 6. Get a list of all registered custom IDs:
+# List<String> allIds = com.prisma.tessera.api.Tessera.getAllIds();
+
+
+# ------------------------------------------------------------------------------
+# SECTION 19: FREQUENTLY ASKED QUESTIONS (FAQ & TROUBLESHOOTING)
+# ------------------------------------------------------------------------------
+# Q1: Why are players seeing 'Resource pack download failed'?
+# A1: Ensure the port configured in pack.server.port (8085) is port-forwarded
+# and open in your firewall (e.g. ufw allow 8085/tcp), and that 'domain' points
+# to your server's public external IP or domain name rather than 'localhost'.
+#
+# Q2: Does resource pack anti-unzip protection work against WinRAR and 7-Zip?
+# A2: Yes! Protection Level 2 corrupts local file header path entries using directory
+# traversal markers ('../../\\\\'). Standard unzippers abort extraction to prevent
+# zip-slip exploits, protecting your textures from extraction.
+#
+# Q3: How do I reload configurations without restarting the server?
+# A3: Use the command '/tessera reload'. This reloads all files from items/, blocks/,
+# furniture/, recipes/, hud/, recompiles the pack, and updates the SHA-1 hash.
+#
+# Q4: How do I create custom armor with unique models?
+# A4: Create an item file in items/ using LEATHER_CHESTPLATE (or similar) with
+# custom_model_data or modern Paper armor trim components.
+#
+# Q5: Is Tessera compatible with Bedrock players via GeyserMC?
+# A5: Yes! Tessera generates standard Java model assets. For Bedrock edition clients,
+# GeyserOptionalPack or an automated resource pack converter can be used.
+#
+# Q6: Why do some custom items show up as purple and black checkerboards?
+# A6: Verify that the texture path in your model JSON matches the real file path
+# inside pack/assets/tessera/textures/. Note that file paths in Linux are case-sensitive!
+
+
+# ------------------------------------------------------------------------------
+# SECTION 20: TOOLS & WEAPONS ADVANCED EXAMPLES
+# ------------------------------------------------------------------------------
+# EXAMPLE 8: Custom Bow in items/ruby_bow.yml
+# ---------------------------------------------------
+# ruby_bow:
+#   material: BOW
+#   display_name: "<gradient:#ff416c:#ff4b2b><bold>Ruby Longbow</bold></gradient>"
+#   lore:
+#     - "<gray>Fires high-velocity burning ruby arrows."
+#     - "<red>+25% Projectile Velocity"
+#   custom_model_data: 10003
+#   unbreakable: false
+#   max_durability: 1500
+#   mechanics:
+#     - type: "projectile"
+#       velocity_multiplier: 1.25
+#       trail_particle: "FLAME"
+#
+# EXAMPLE 9: Custom Pickaxe in items/ruby_pickaxe.yml
+# -------------------------------------------------------
+# ruby_pickaxe:
+#   material: DIAMOND_PICKAXE
+#   display_name: "<gradient:#ff416c:#ff4b2b><bold>Ruby Pickaxe</bold></gradient>"
+#   lore:
+#     - "<gray>Excavates stone and ores at extreme speeds."
+#     - "<yellow>Auto-smelt ores into ingots on harvest."
+#   custom_model_data: 10004
+#   max_durability: 3000
+#   mechanics:
+#     - type: "auto_smelt"
+#       enabled: true
+
+
+# ------------------------------------------------------------------------------
+# SECTION 21: TECHNICAL SUPPORT & COMMUNITY
+# ------------------------------------------------------------------------------
+# Thank you for choosing the Tessera Engine!
+# If you encounter issues, have questions, or would like to request new mechanics:
+#
+# • GitHub: https://github.com/4rubka/Tessera
+# • Issues: https://github.com/4rubka/Tessera/issues
+# • Discord: https://discord.gg/tessera-dev
+# • Lead Author: _4rubka_
+# • Base Package: com.prisma.tessera
+#
+# ==============================================================================
+#  END OF TESSERA MASTER CONFIGURATION
+# ==============================================================================
