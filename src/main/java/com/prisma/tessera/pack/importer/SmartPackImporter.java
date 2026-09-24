@@ -123,6 +123,7 @@ public final class SmartPackImporter {
         try {
             
             try (ZipFile zip = new ZipFile(zipFile)) {
+                String extractRoot = tempExtractDir.getCanonicalPath() + File.separator;
                 Enumeration<? extends ZipEntry> entries = zip.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
@@ -133,6 +134,13 @@ public final class SmartPackImporter {
                     }
 
                     File destFile = new File(tempExtractDir, name);
+                    // Zip Slip: an entry like ../../plugins/x.jar would otherwise be written outside the
+                    // temp folder, for example into plugins/, and run on the next start.
+                    if (!destFile.getCanonicalPath().startsWith(extractRoot)) {
+                        warnings.add("Skipped unsafe zip entry: " + name);
+                        plugin.getLogger().warning("[SmartPackImporter] Skipped zip entry outside the pack: " + name);
+                        continue;
+                    }
                     if (entry.isDirectory()) {
                         destFile.mkdirs();
                     } else {
