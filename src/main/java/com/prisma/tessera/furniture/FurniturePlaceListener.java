@@ -2,6 +2,7 @@ package com.prisma.tessera.furniture;
 
 import com.prisma.tessera.TesseraPlugin;
 import com.prisma.tessera.items.ItemUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -12,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDismountEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
@@ -56,6 +58,16 @@ public final class FurniturePlaceListener implements Listener {
         Block placeBlock = clicked.getRelative(face);
 
         Player player = event.getPlayer();
+        if (!placeBlock.isReplaceable()) {
+            return;
+        }
+        // Region plugins guard block placement, not right-clicks, so ask them through a place event.
+        BlockPlaceEvent check = new BlockPlaceEvent(placeBlock, placeBlock.getState(), clicked, item, player, true, EquipmentSlot.HAND);
+        Bukkit.getPluginManager().callEvent(check);
+        if (check.isCancelled() || !check.canBuild()) {
+            return;
+        }
+
         float yaw = player.getLocation().getYaw() + 180.0f;
 
         Location spawnLoc = placeBlock.getLocation();

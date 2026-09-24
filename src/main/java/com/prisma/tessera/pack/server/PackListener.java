@@ -84,6 +84,11 @@ public final class PackListener implements Listener {
                     Title.Times.times(Duration.ofMillis(200), Duration.ofSeconds(30), Duration.ofMillis(500))
             );
             player.showTitle(loadingTitle);
+
+            // A client that never answers would otherwise stay invulnerable and frozen.
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (player.isOnline()) releasePlayer(player);
+            }, 20L * 60);
         }
 
         try {
@@ -137,7 +142,7 @@ public final class PackListener implements Listener {
                     player.sendMessage(mm.deserialize(warnMsg));
                 }
             }
-            case FAILED_DOWNLOAD -> {
+            case FAILED_DOWNLOAD, INVALID_URL, FAILED_RELOAD -> {
                 releasePlayer(player);
                 boolean kickOnFail = plugin.getConfig().getBoolean("pack.server.kick_on_fail", false);
                 if (kickOnFail) {

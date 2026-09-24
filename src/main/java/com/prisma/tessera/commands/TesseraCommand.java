@@ -508,6 +508,10 @@ public final class TesseraCommand implements CommandExecutor, TabCompleter {
                         if (!targetFile.exists() && !target.endsWith(".zip")) {
                             targetFile = new File(plugin.getSmartPackImporter().getImportsDir(), target + ".zip");
                         }
+                        if (!isInside(plugin.getSmartPackImporter().getImportsDir(), targetFile)) {
+                            sender.sendMessage(mm.deserialize("<red>Pack must be inside the imports folder.</red>"));
+                            return;
+                        }
                         if (!targetFile.exists()) {
                             sender.sendMessage(mm.deserialize("<red>ZIP file not found in imports folder: <yellow>" + target + "</yellow></red>"));
                             sender.sendMessage(mm.deserialize("<gray>Drop your .zip pack into <aqua>plugins/Tessera/imports/</aqua> first.</gray>"));
@@ -1030,6 +1034,14 @@ public final class TesseraCommand implements CommandExecutor, TabCompleter {
         }
 
         return Collections.emptyList();
+    }
+
+    private static boolean isInside(File dir, File file) {
+        try {
+            return file.getCanonicalPath().startsWith(dir.getCanonicalPath() + File.separator);
+        } catch (java.io.IOException e) {
+            return false;
+        }
     }
 
     private List<String> getAllCustomIds() {

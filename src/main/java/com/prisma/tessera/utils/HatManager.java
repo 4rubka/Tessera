@@ -1,7 +1,9 @@
 package com.prisma.tessera.utils;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -22,6 +24,12 @@ public final class HatManager {
             return;
         }
 
+        if (helmetItem != null && helmetItem.containsEnchantment(Enchantment.BINDING_CURSE)
+                && player.getGameMode() != GameMode.CREATIVE) {
+            player.sendMessage(MM.deserialize("<red>Your helmet has Curse of Binding.</red>"));
+            return;
+        }
+
         if (handItem.isEmpty() || handItem.getType().isAir()) {
             inv.setItemInMainHand(helmetItem);
             inv.setHelmet(null);
@@ -37,7 +45,8 @@ public final class HatManager {
             handItem.setAmount(handItem.getAmount() - 1);
             inv.setItemInMainHand(handItem);
             if (helmetItem != null && !helmetItem.getType().isAir()) {
-                inv.addItem(helmetItem);
+                // A full inventory would otherwise delete the old helmet.
+                inv.addItem(helmetItem).values().forEach(left -> player.getWorld().dropItem(player.getLocation(), left));
             }
         } else {
             inv.setItemInMainHand(helmetItem != null ? helmetItem : ItemStack.empty());

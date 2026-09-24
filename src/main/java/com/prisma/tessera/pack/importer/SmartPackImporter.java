@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -45,6 +47,7 @@ public final class SmartPackImporter {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final MiniMessage MM = MiniMessage.miniMessage();
     private static final AtomicInteger CMD_COUNTER = new AtomicInteger(20000);
+    private static final long MAX_DOWNLOAD_BYTES = 200L * 1024 * 1024;
 
     public record ImportResult(
             String sourceName,
@@ -66,6 +69,7 @@ public final class SmartPackImporter {
     private final File processedDir;
     private final File packDir;
     private BukkitTask watcherTask;
+    private final Map<String, Long> failedImports = new ConcurrentHashMap<>();
 
     public SmartPackImporter(@NotNull TesseraPlugin plugin) {
         this.plugin = plugin;
@@ -85,11 +89,19 @@ public final class SmartPackImporter {
 
         int intervalSeconds = Math.max(5, plugin.getConfig().getInt("pack.importer.watch_interval_seconds", 15));
         watcherTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            // Skip files that are still being copied in, and broken zips until they change on disk.
+            long now = System.currentTimeMillis();
             File[] zips = importsDir.listFiles((dir, name) -> name.toLowerCase(Locale.ROOT).endsWith(".zip"));
-            if (zips != null && zips.length > 0) {
-                plugin.getLogger().info("[SmartPackImporter] Detected " + zips.length + " new resource pack(s) in imports/. Starting auto-ingestion pipeline...");
-                for (File zip : zips) {
-                    importZip(zip, true, true);
+            if (zips == null) return;
+            for (File zip : zips) {
+                long modified = zip.lastModified();
+                if (now - modified < 5000 || Long.valueOf(modified).equals(failedImports.get(zip.getName()))) continue;
+                plugin.getLogger().info("[SmartPackImporter] Detected new resource pack " + zip.getName() + " in imports/. Importing...");
+                if (importZip(zip, true, true).success()) {
+                    failedImports.remove(zip.getName());
+                } else {
+                    failedImports.put(zip.getName(), modified);
+                    plugin.getLogger().warning("[SmartPackImporter] " + zip.getName() + " was not imported. It is retried after the file changes.");
                 }
             }
         }, 100L, intervalSeconds * 20L);
@@ -102,7 +114,8 @@ public final class SmartPackImporter {
         }
     }
 
-    public ImportResult importZip(@NotNull File zipFile, boolean autoGenerateItems, boolean broadcastPack) {
+    // synchronized: the folder watcher, the command and URL imports run on different async threads.
+    public synchronized ImportResult importZip(@NotNull File zipFile, boolean autoGenerateItems, boolean broadcastPack) {
         long start = System.currentTimeMillis();
         List<String> warnings = new ArrayList<>();
         int texturesCount = 0;
@@ -269,24 +282,52 @@ public final class SmartPackImporter {
                 }
                 HttpClient client = HttpClient.newBuilder()
                         .connectTimeout(Duration.ofSeconds(15))
-                        .followRedirects(HttpClient.Redirect.NORMAL)
+                        .followRedirects(HttpClient.Redirect.NEVER)
                         .build();
 
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(urlString))
-                        .timeout(Duration.ofMinutes(2))
-                        .header("User-Agent", "Tessera-ResourcePack-Pipeline/1.0")
-                        .GET()
-                        .build();
+                // Redirects are followed by hand so every hop is checked against internal addresses.
+                URI uri = URI.create(urlString);
+                HttpResponse<InputStream> response = null;
+                for (int hop = 0; hop <= 5; hop++) {
+                    checkPublicUri(uri);
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .uri(uri)
+                            .timeout(Duration.ofMinutes(2))
+                            .header("User-Agent", "Tessera-ResourcePack-Pipeline/1.0")
+                            .GET()
+                            .build();
+                    response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+                    int code = response.statusCode();
+                    if (code < 300 || code >= 400) break;
+                    String location = response.headers().firstValue("Location").orElse(null);
+                    response.body().close();
+                    if (location == null || hop == 5) throw new IOException("Too many or broken redirects");
+                    uri = uri.resolve(location);
+                }
 
-                File downloadTarget = new File(importsDir, "downloaded_" + System.currentTimeMillis() + ".zip");
-                HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+                // Written under a .part name so the folder watcher does not import a half-downloaded file.
+                String downloadName = "downloaded_" + System.currentTimeMillis() + ".zip";
+                File partFile = new File(importsDir, downloadName + ".part");
+                File downloadTarget = new File(importsDir, downloadName);
 
                 if (response.statusCode() >= 200 && response.statusCode() < 300) {
                     try (InputStream in = response.body();
-                         FileOutputStream out = new FileOutputStream(downloadTarget)) {
-                        in.transferTo(out);
+                         FileOutputStream out = new FileOutputStream(partFile)) {
+                        byte[] buffer = new byte[8192];
+                        long total = 0;
+                        int read;
+                        while ((read = in.read(buffer)) != -1) {
+                            total += read;
+                            if (total > MAX_DOWNLOAD_BYTES) break;
+                            out.write(buffer, 0, read);
+                        }
+                        if (total > MAX_DOWNLOAD_BYTES) {
+                            out.close();
+                            Files.deleteIfExists(partFile.toPath());
+                            throw new IOException("Pack is larger than " + MAX_DOWNLOAD_BYTES / 1024 / 1024 + " MB");
+                        }
                     }
+                    Files.move(partFile.toPath(), downloadTarget.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
                     if (requester != null) {
                         requester.sendMessage(MM.deserialize("<green>Download complete! Ingesting into server resource pack...</green>"));
@@ -308,11 +349,27 @@ public final class SmartPackImporter {
                     }
                 }
             } catch (Exception e) {
+                plugin.getLogger().warning("[SmartPackImporter] Download from " + urlString + " failed: " + e.getMessage());
                 if (requester != null) {
                     requester.sendMessage(MM.deserialize("<red>Download error: " + e.getMessage() + "</red>"));
                 }
             }
         });
+    }
+
+    private static void checkPublicUri(URI uri) throws IOException {
+        String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
+        if (!scheme.equals("http") && !scheme.equals("https") || uri.getHost() == null) {
+            throw new IOException("Only http(s) URLs are allowed");
+        }
+        for (InetAddress address : InetAddress.getAllByName(uri.getHost())) {
+            byte[] raw = address.getAddress();
+            boolean uniqueLocalV6 = raw.length == 16 && (raw[0] & 0xFE) == 0xFC;
+            if (address.isAnyLocalAddress() || address.isLoopbackAddress() || address.isLinkLocalAddress()
+                    || address.isSiteLocalAddress() || address.isMulticastAddress() || uniqueLocalV6) {
+                throw new IOException("Refusing to download from internal address " + uri.getHost());
+            }
+        }
     }
 
     private int mergeSoundsJson(File source, File target, List<String> warnings) {

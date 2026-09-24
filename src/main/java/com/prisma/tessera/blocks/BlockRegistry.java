@@ -93,6 +93,12 @@ public final class BlockRegistry {
         NamespacedKey key = getChunkKey(block.getX(), block.getY(), block.getZ());
         String id = chunkPdc.get(key, PersistentDataType.STRING);
         if (id != null) {
+            // WorldEdit, /setblock or fire replace the block without a break event, which leaves the entry behind.
+            BlockTemplate template = blocks.get(id);
+            if (template != null && block.getType() != template.getMaterial()) {
+                chunkPdc.remove(key);
+                return null;
+            }
             return id;
         }
 

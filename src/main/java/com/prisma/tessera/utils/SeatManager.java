@@ -8,6 +8,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Bisected;
+import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -37,7 +40,17 @@ public final class SeatManager implements Listener {
     }
 
     public boolean sitOnBlock(@NotNull Player player, @NotNull Block block) {
-        Location seatLoc = block.getLocation().add(0.5, 0.2, 0.5);
+        // Seat on top of the block. Blocks higher than a jump or with no room above are refused,
+        // otherwise sitting and standing up moves the player over walls and through windows.
+        double top = block.getBlockData() instanceof Stairs stairs && stairs.getHalf() == Bisected.Half.BOTTOM
+                ? block.getY() + 0.5 : block.getBoundingBox().getMaxY();
+        if (block.isPassable() || top - player.getLocation().getY() > 1.0
+                || !block.getRelative(BlockFace.UP).isPassable() || !block.getRelative(BlockFace.UP, 2).isPassable()) {
+            player.sendMessage(MM.deserialize("<red>You can't sit there.</red>"));
+            return false;
+        }
+        Location seatLoc = block.getLocation().add(0.5, 0, 0.5);
+        seatLoc.setY(top);
         return sitAt(player, seatLoc);
     }
 

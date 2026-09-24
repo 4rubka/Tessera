@@ -172,6 +172,10 @@ public final class FurnitureManager {
     }
 
     public void removeFurniture(@NotNull Entity entity, boolean dropItem) {
+        // Two hits in one tick on different parts would otherwise drop the item twice.
+        if (!entity.isValid()) {
+            return;
+        }
         String rootUuidStr = getFurnitureRootId(entity);
         String fid = getFurnitureId(entity);
         if (rootUuidStr == null || fid == null) {
